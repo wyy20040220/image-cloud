@@ -1,0 +1,7 @@
+{
+  "description": "图云 - 免费图片存储服务",
+  "rules": [{
+    "action": "allow",
+    "page": "*"
+  }]
+}

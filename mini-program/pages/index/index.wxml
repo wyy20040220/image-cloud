@@ -1,0 +1,39 @@
+<view class="container">
+  <!-- 上传区域 -->
+  <view class="upload-section">
+    <view class="upload-box" bindtap="chooseImage">
+      <text class="upload-icon">📤</text>
+      <text class="upload-text">点击上传图片</text>
+      <text class="upload-hint">支持 JPG、PNG、GIF</text>
+    </view>
+  </view>
+
+  <!-- 图片列表 -->
+  <view class="gallery-section">
+    <view class="section-header">
+      <text class="section-title">图片库 ({{images.length}})</text>
+      <button class="refresh-btn" bindtap="loadImages" size="mini">刷新</button>
+    </view>
+
+    <view class="image-grid" wx:if="{{images.length > 0}}">
+      <view class="image-item" wx:for="{{images}}" wx:key="filename">
+        <image 
+          src="{{item.fullUrl}}" 
+          mode="aspectFill" 
+          bindtap="previewImage" 
+          data-url="{{item.fullUrl}}"
+          lazy-load
+        />
+        <view class="image-actions">
+          <button class="action-btn save" bindtap="saveImage" data-url="{{item.fullUrl}}">保存</button>
+          <button class="action-btn delete" bindtap="deleteImage" data-filename="{{item.filename}}">删除</button>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:else>
+      <text class="empty-icon">🖼️</text>
+      <text class="empty-text">暂无图片</text>
+    </view>
+  </view>
+</view>
