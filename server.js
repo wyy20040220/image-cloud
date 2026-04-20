@@ -7,6 +7,11 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// 配置公网域名（用于生成正确的图片URL）
+// 如果使用 localtunnel/ngrok 等内网穿透工具，请设置此环境变量
+// 例如: export PUBLIC_URL=https://wicked-games-kiss.loca.lt
+const PUBLIC_URL = process.env.PUBLIC_URL || '';
+
 // 启用CORS - 允许小程序和其他前端访问
 app.use(cors({
   origin: '*',
@@ -62,12 +67,15 @@ app.get('/api/images', (req, res) => {
       return res.status(500).json({ error: '读取图片列表失败' });
     }
     
+    const protocol = PUBLIC_URL ? 'https' : req.protocol;
+    const host = PUBLIC_URL ? PUBLIC_URL.replace(/^https?:\/\//, '') : req.get('host');
+    
     const images = files
       .filter(file => /\.(jpg|jpeg|png|gif|webp)$/i.test(file))
       .map(file => ({
         filename: file,
         url: `/uploads/${file}`,
-        fullUrl: `${req.protocol}://${req.get('host')}/uploads/${file}`
+        fullUrl: `${protocol}://${host}/uploads/${file}`
       }));
     
     res.json({ images });
@@ -80,6 +88,9 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
     return res.status(400).json({ error: '没有上传文件或文件类型不正确' });
   }
   
+  const protocol = PUBLIC_URL ? 'https' : req.protocol;
+  const host = PUBLIC_URL ? PUBLIC_URL.replace(/^https?:\/\//, '') : req.get('host');
+  
   res.json({
     success: true,
     message: '上传成功',
@@ -87,7 +98,7 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
       filename: req.file.filename,
       originalname: req.file.originalname,
       url: `/uploads/${req.file.filename}`,
-      fullUrl: `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
+      fullUrl: `${protocol}://${host}/uploads/${req.file.filename}`
     }
   });
 });
